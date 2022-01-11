@@ -30,12 +30,12 @@ class UserSrv:
 		except sqlite3.error : 
 			print("Error open db.\n")
 		self.cursor = self.database.cursor()
-		self.cursor.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, password TEXT, port int, username TEXT) """)
+		self.cursor.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, password TEXT, port int,publicKey TEXT, username TEXT) """)
 
-	def addUser(self,ip, password, port, username):
-		if  ip == "" or password == "" or username == "":
+	def addUser(self,ip, password, port, publicKey, username):
+		if  ip == "" or password == "" or publicKey == "" or username == "":
 			return False
-		self.cursor.execute("""INSERT INTO users(ip, password, port, username) VALUES(?,?,?,?)""",(ip, password, port, username))	
+		self.cursor.execute("""INSERT INTO users(ip, password, port, publicKey, username) VALUES(?,?,?,?,?)""",(ip, password, port, publicKey, username))	
 		if self.cursor.rowcount == 0:
 			return False
 		return True
@@ -62,7 +62,7 @@ class UserSrv:
 	
 
 	def getUser(self,id):
-		self.cursor.execute("""SELECT id, ip, password, port, username FROM users WHERE id=?""", (id,))
+		self.cursor.execute("""SELECT id, ip, password, port, publicKey, username FROM users WHERE id=?""", (id,))
 		user = self.cursor.fetchone()
 		return user
 
