@@ -61,9 +61,18 @@ class UserSrv:
 
 	
 
-	# def getUser(self,name):
-	# 	return self.cursor.execute("""SELECT * FROM users WHERE Name="name" """).fetchone()
-
+def getUser(self,id):
+		self.cursor.execute("""SELECT * FROM users WHERE id="id" """)
+		tab_usr = []
+		rows = self.cursor.fetchall()
+		for row in rows:
+			tab_usr[0] = row['id']
+			tab_usr[1] = row['ip']
+			tab_usr[2] = row['password']
+			tab_usr[3] = row['port']
+			tab_usr[4] = row['username']
+		return tab_usr
+		
 if __name__ == '__main__':
 	ARGS = docopt(__doc__)
 	if ARGS['--port']:
