@@ -30,29 +30,25 @@ class UserSrv:
 		except sqlite3.error : 
 			print("Error open db.\n")
 		self.cursor = self.database.cursor()
-		self.cursor.execute("""CREATE TABLE IF NOT EXISTS users(id int, ip TEXT, password TEXT, port int, username TEXT) """)
+		self.cursor.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, password TEXT, port int, username TEXT) """)
 
-	# def find_next_id(self,count):
-	# 	if count == 1:
-	# 		return 1
-	# 	else:
-	# 		return count+1
-
-	def addUser(self,id,ip, password, port, username):
-		# id += 1
-		self.cursor.execute("""INSERT INTO users(id,ip, password, port, username) VALUES(?,?,?,?,?)""",(id,ip, password, port, username))	
+	def addUser(self,ip, password, port, username):
+		if  ip == "" or password == "" or username == "":
+			return False
+		self.cursor.execute("""INSERT INTO users(ip, password, port, username) VALUES(?,?,?,?)""",(ip, password, port, username))	
 		if self.cursor.rowcount == 0:
 			return False
 		return True
 
-	# def returnKey(keyAsker,keyGiver):
-	# 	# requete http au client dans post payload 
-	# 	# key public 
-	# 	# il y aura une requete au serveur pour donner les deux cles au keygiver
-	# 	return keyAsker, keyGiver
+	def returnKey(keyAsker,keyGiver):
+		# requete http au client dans post payload 
+		# key public 
+		# il y aura une requete au serveur pour donner les deux cles au keygiver
+		return keyAsker, keyGiver
 	
-	# def hash(password):
-	# 	return hash(password)
+	def hashed(self,password):
+		# return password
+		return hash(password)
 
 	# def getUser(self,name):
 	# 	return self.cursor.execute("""SELECT * FROM users WHERE Name="name" """).fetchone()
