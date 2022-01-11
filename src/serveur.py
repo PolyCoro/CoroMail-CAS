@@ -40,15 +40,26 @@ class UserSrv:
 			return False
 		return True
 
-	def returnKey(keyAsker,keyGiver):
-		# requete http au client dans post payload 
-		# key public 
-		# il y aura une requete au serveur pour donner les deux cles au keygiver
-		return keyAsker, keyGiver
+	def returnKey(self,keyAsker,keyGiver):
+		
+		self.cursor.execute("""SELECT publicKey FROM users WHERE username = ? """,(keyGiver,))
+		publicKeyGiver = self.cursor.fetchall()
+		self.cursor.execute("""SELECT ip FROM users WHERE username = ? """,(keyAsker,))
+		ipKeyAsker = self.cursor.fetchall()
+		self.cursor.execute("""SELECT port FROM users WHERE username = ? """,(keyAsker,))
+		portKeyAsker = self.cursor.fetchall()
+		print(publicKeyGiver)
+		url = "https://" + ipKeyAsker + "/" + portKeyAsker
+		donnee = json.loads({public_key : publicKeyGiver})
+		r = requests.post(url, data=donnee)
+
+		return True
 	
 	def hashed(self,password):
 		# return password
 		return hash(password)
+
+	
 
 	# def getUser(self,name):
 	# 	return self.cursor.execute("""SELECT * FROM users WHERE Name="name" """).fetchone()
