@@ -19,18 +19,18 @@ class TestUserSrv(unittest.TestCase):
 	def test_addUser(self):
 		# ouverture/initialisation de la base de donnee 
 		try:
-			os.remove('test.db')
+			os.remove('database.db')
 		except:
 			pass
 
-		conn = sqlite3.connect('test.db')
+		conn = sqlite3.connect('database.db')
 		conn.row_factory = sqlite3.Row
 		c = conn.cursor()
-		c.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, password TEXT, port int, username TEXT) """)
+		c.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, password TEXT, port int, publicKey TEXT, username TEXT) """)
 		
 		test = UserSrv()
 
-		res = test.addUser("102.021.32.12" ,"password_karim",102,"Karim")
+		res = test.addUser("102.021.32.12" ,"password_karim",102,"CLE_KARIM","Karim")
 		self.assertEqual(res,True)
 		c.execute("SELECT * FROM users WHERE username='Karim'")
 		rows = c.fetchall()
@@ -39,9 +39,10 @@ class TestUserSrv(unittest.TestCase):
 			self.assertEqual(row['ip'], "102.021.32.12")
 			self.assertEqual(row['password'], "password_karim")
 			self.assertEqual(row['port'], 102)
+			self.assertEqual(row['publicKey'], "CLE_KARIM")
 			self.assertEqual(row['username'], "Karim")
 
-		res = test.addUser("99.99.99.910","password_PE",2563,"PE")
+		res = test.addUser("99.99.99.910","password_PE",2563,"CLE_PE","PE")
 		self.assertEqual(res,True)
 		c.execute("SELECT * FROM users WHERE id=2")
 		rows = c.fetchall()
@@ -50,9 +51,10 @@ class TestUserSrv(unittest.TestCase):
 			self.assertEqual(row['ip'], "99.99.99.910")
 			self.assertEqual(row['password'], "password_PE")
 			self.assertEqual(row['port'], 2563)
+			self.assertEqual(row['publicKey'],"CLE_PE")
 			self.assertEqual(row['username'], "PE")
 
-		res = test.addUser(" ","ef",0,"ef")
+		res = test.addUser(" ","ef",0,"ef","ef")
 		self.assertEqual(res,True)
 		c.execute("SELECT * FROM users WHERE ip=' '")
 		rows = c.fetchall()
@@ -61,9 +63,10 @@ class TestUserSrv(unittest.TestCase):
 			self.assertEqual(row['ip'], "")
 			self.assertEqual(row['password'], "ef")
 			self.assertEqual(row['port'], 0)
+			self.assertEqual(row['publicKey'], "ef")
 			self.assertEqual(row['username'], "ef")
 
-		res = test.addUser("ef"," ",0,"ef")
+		res = test.addUser("ef"," ",0,"ef","ef")
 		self.assertEqual(res,True)
 		c.execute("SELECT * FROM users WHERE password=' '")
 		rows = c.fetchall()
@@ -72,9 +75,10 @@ class TestUserSrv(unittest.TestCase):
 			self.assertEqual(row['ip'], "")
 			self.assertEqual(row['password'], "ef")
 			self.assertEqual(row['port'], 0)
+			self.assertEqual(row['publicKey'], "ef")
 			self.assertEqual(row['username'], "ef")
 
-		res = test.addUser("ef","ef" ,0," ")
+		res = test.addUser("ef","ef" ,0,"ef"," ")
 		self.assertEqual(res,True)
 		c.execute("SELECT * FROM users WHERE username=' '")
 		rows = c.fetchall()
@@ -83,9 +87,22 @@ class TestUserSrv(unittest.TestCase):
 			self.assertEqual(row['ip'], "ef")
 			self.assertEqual(row['password'], "ef")
 			self.assertEqual(row['port'], 0)
+			self.assertEqual(row['publicKey'], "ef")
 			self.assertEqual(row['username'], " ")
 		
-		res = test.addUser("ef&!$","ef" ,0," ")
+		res = test.addUser("ef","ef" ,0," ","ef")
+		self.assertEqual(res,True)
+		c.execute("SELECT * FROM users WHERE username=' '")
+		rows = c.fetchall()
+		for row in rows:
+			self.assertEqual(row['id'], 4)
+			self.assertEqual(row['ip'], "ef")
+			self.assertEqual(row['password'], "ef")
+			self.assertEqual(row['port'], 0)
+			self.assertEqual(row['publicKey'], " ")
+			self.assertEqual(row['username'], " ")
+		
+		res = test.addUser("ef&!$","ef" ,0,"ef"," ")
 		self.assertEqual(res,True)
 		c.execute("SELECT * FROM users WHERE username=' '")
 		rows = c.fetchall()
@@ -94,16 +111,21 @@ class TestUserSrv(unittest.TestCase):
 			self.assertEqual(row['ip'], "ef&!$")
 			self.assertEqual(row['password'], "ef")
 			self.assertEqual(row['port'], 1)
+			self.assertEqual(row['publicKey'], "ef")
 			self.assertEqual(row['username'], " ")
 
-		res = test.addUser("","ef" ,0, "ef")
+		res = test.addUser("","ef" ,0,"ef", "ef")
 		self.assertEqual(res,False)
 
-		res = test.addUser("ef","" ,0, "ef")
+		res = test.addUser("ef","" ,0,"ef", "ef")
 		self.assertEqual(res,False)
 
-		res = test.addUser("ef","ef" ,0, "")
+		res = test.addUser("ef","ef" ,0,"ef", "")
 		self.assertEqual(res,False)
+
+		res = test.addUser("ef","ef" ,0,"", "ef")
+		self.assertEqual(res,False)
+
 		
 		conn.commit()
 		conn.close()
@@ -117,16 +139,16 @@ class TestUserSrv(unittest.TestCase):
 		conn = sqlite3.connect('test.db')
 		conn.row_factory = sqlite3.Row
 		c = conn.cursor()
-		c.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, password TEXT, port int, username TEXT) """)
+		c.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, password TEXT, port int, publicKey TEXT, username TEXT) """)
 
 		test = UserSrv()
 
-		test.addUser("102.021.32.12" ,"password_karim",102,"Karim")
-		test.addUser("99.99.99.910","password_PE",2563,"PE")
+		test.addUser("102.021.32.12" ,"password_karim", 102,"key","Karim")
+		test.addUser("99.99.99.910","password_PE", 2563,"keyPublic","PE")
 
 
-		self.assertEqual(test.getUser(1), (1,"102.021.32.12" ,"password_karim",102,"Karim"))
-		self.assertEqual(test.getUser(2), (2,"99.99.99.910","password_PE",2563,"PE"))
+		self.assertEqual(test.getUser(1), (1,"102.021.32.12" ,"password_karim",102, "key","Karim"))
+		self.assertEqual(test.getUser(2), (2,"99.99.99.910","password_PE",2563, "keyPublic","PE"))
 
 
 		
