@@ -5,8 +5,11 @@ import subprocess
 import time
 import sqlite3
 import os
-import src
-from src.serveur import UserSrv
+#import src
+#from src.serveur import UserSrv
+import sys
+sys.path.append("/home/ei-se/Documents/coroMail/CoroMail-CAS/src")
+from serveur import UserSrv
 
 class TestUserSrv(unittest.TestCase):
 
@@ -151,6 +154,25 @@ class TestUserSrv(unittest.TestCase):
 		self.assertEqual(test.getUser(2), (2,"99.99.99.910","password_PE",2563, "keyPublic","PE"))
 
 
+	def test_returnKey(self):
+
+		try:
+			os.remove('test.db')
+		except:
+			pass
+
+		conn = sqlite3.connect('test.db')
+		conn.row_factory = sqlite3.Row
+		c = conn.cursor()
+		c.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, password TEXT, port int, publicKey TEXT, username TEXT) """)
+
+		test = UserSrv()
+
+		test.addUser("102.021.32.12" ,"password_karim",102, "AZERTYUIOP" ,"Karim")
+		test.addUser("99.99.99.910","password_PE",2563, "MLKJHGFDSQ" ,"PE")
+
+		self.assertEqual(test.returnKey("Karim","PE"), ('https://102.021.32.12:102', '{"public_key": "MLKJHGFDSQ"}'))
+		self.assertEqual(test.returnKey("PE","Karim"), ('https://99.99.99.910:2563', '{"public_key": "AZERTYUIOP"}'))
 		
 
 
