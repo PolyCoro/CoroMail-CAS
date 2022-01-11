@@ -151,12 +151,10 @@ class TestUserSrv(unittest.TestCase):
 		self.assertEqual(test.getUser(2), (2,"99.99.99.910","password_PE",2563, "keyPublic","PE"))
 
 
-		
-
-
-	
-	# def test_hashed(self):
-    #     self.assertEqual(test.hashed("example"),hash("example"))
+	def test_hashed(self):
+		test = UserSrv()
+		self.assertEqual(test.hashed("Python Programming"),hash("Python Programming"))
+		self.assertEqual(test.hashed("Python"), hash("Python"))
 	
 	# def setUp(self):
 	# 	cmd = "python user_server.py --port="+self.TestPort
