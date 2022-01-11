@@ -108,6 +108,31 @@ class TestUserSrv(unittest.TestCase):
 		conn.commit()
 		conn.close()
 	
+	def test_get_usr(self):
+		try:
+			os.remove('test.db')
+		except:
+			pass
+
+		conn = sqlite3.connect('test.db')
+		conn.row_factory = sqlite3.Row
+		c = conn.cursor()
+		c.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, password TEXT, port int, username TEXT) """)
+
+		test = UserSrv()
+
+		test.addUser("102.021.32.12" ,"password_karim",102,"Karim")
+		test.addUser("99.99.99.910","password_PE",2563,"PE")
+
+
+		self.assertEqual(test.getUser(1), (1,"102.021.32.12" ,"password_karim",102,"Karim"))
+		self.assertEqual(test.getUser(2), (2,"99.99.99.910","password_PE",2563,"PE"))
+
+
+		
+
+
+	
 	# def test_hashed(self):
     #     self.assertEqual(test.hashed("example"),hash("example"))
 	
