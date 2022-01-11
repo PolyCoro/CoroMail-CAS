@@ -40,20 +40,20 @@ class UserSrv:
 			return False
 		return True
 
-	def returnKey(self,keyAsker,keyGiver):
+	# def returnKey(self,keyAsker,keyGiver):
 		
-		self.cursor.execute("""SELECT publicKey FROM users WHERE username = ? """,(keyGiver,))
-		publicKeyGiver = self.cursor.fetchall()
-		self.cursor.execute("""SELECT ip FROM users WHERE username = ? """,(keyAsker,))
-		ipKeyAsker = self.cursor.fetchall()
-		self.cursor.execute("""SELECT port FROM users WHERE username = ? """,(keyAsker,))
-		portKeyAsker = self.cursor.fetchall()
-		print(publicKeyGiver)
-		url = "https://" + ipKeyAsker + "/" + portKeyAsker
-		donnee = json.loads({public_key : publicKeyGiver})
-		r = requests.post(url, data=donnee)
+	# 	self.cursor.execute("""SELECT publicKey FROM users WHERE username = ? """,(keyGiver,))
+	# 	publicKeyGiver = self.cursor.fetchall()
+	# 	self.cursor.execute("""SELECT ip FROM users WHERE username = ? """,(keyAsker,))
+	# 	ipKeyAsker = self.cursor.fetchall()
+	# 	self.cursor.execute("""SELECT port FROM users WHERE username = ? """,(keyAsker,))
+	# 	portKeyAsker = self.cursor.fetchall()
+	# 	print(publicKeyGiver)
+	# 	url = "https://" + ipKeyAsker + "/" + portKeyAsker
+	# 	donnee = json.loads({public_key : publicKeyGiver})
+	# 	r = requests.post(url, data=donnee)
 
-		return True
+	# 	return True
 	
 	def hashed(self,password):
 		# return password
@@ -61,18 +61,11 @@ class UserSrv:
 
 	
 
-def getUser(self,id):
-		self.cursor.execute("""SELECT * FROM users WHERE id="id" """)
-		tab_usr = []
-		rows = self.cursor.fetchall()
-		for row in rows:
-			tab_usr[0] = row['id']
-			tab_usr[1] = row['ip']
-			tab_usr[2] = row['password']
-			tab_usr[3] = row['port']
-			tab_usr[4] = row['username']
-		return tab_usr
-		
+	def getUser(self,id):
+		self.cursor.execute("""SELECT id, ip, password, port, username FROM users WHERE id=?""", (id,))
+		user = self.cursor.fetchone()
+		return user
+
 if __name__ == '__main__':
 	ARGS = docopt(__doc__)
 	if ARGS['--port']:
