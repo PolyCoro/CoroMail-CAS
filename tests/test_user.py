@@ -2,8 +2,9 @@
 import unittest
 
 import sys
+import src
 sys.path.append("/home/deac/workworkwork/CoroMail-CAS/src")
-from user import User
+from src.user import User
 
 
 class TestFuncs(unittest.TestCase):
