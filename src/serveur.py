@@ -32,12 +32,25 @@ class UserSrv:
 		except sqlite3.error : 
 			print("Error open db.\n")
 		self.cursor = self.database.cursor()
-		self.cursor.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, password TEXT, port int,publicKey TEXT, username TEXT) """)
+		self.cursor.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, 
+																ip TEXT,
+																key_expiration DATE, 
+																password TEXT, 
+																port int,
+																privateKey TEXT NOT NULL,
+																publicKey TEXT NOT NULL, 
+																username TEXT NOT NULL) """)
 
-	def addUser(self,ip, password, port, publicKey, username):
-		if  ip == "" or password == "" or publicKey == "" or username == "":
+	def addUser(self,ip,key_expiration,password,port,privateKey,publicKey,username):
+		if  key_expiration == "" or ip == "" or password == "" or privateKey == "" or publicKey == "" or username == "":
 			return False
-		self.cursor.execute("""INSERT INTO users(ip, password, port, publicKey, username) VALUES(?,?,?,?,?)""",(ip, password, port, publicKey, username))	
+		self.cursor.execute("""INSERT INTO users(ip,key_expiration, password,port,privateKey,publicKey,username) VALUES(?,?,?,?,?,?,?)""",(ip,
+																																		   key_expiration,
+																																		   password, 
+																																		   port,
+																																		   privateKey, 
+																																		   publicKey, 
+																																		   username))	
 		if self.cursor.rowcount == 0:
 			return False
 		return True
@@ -65,13 +78,10 @@ class UserSrv:
 		# 	return False
 	
 	def hashed(self,password):
-		# return password
 		return hash(password)
 
-	
-
 	def getUser(self,id):
-		self.cursor.execute("""SELECT id, ip, password, port, publicKey, username FROM users WHERE id=?""", (id,))
+		self.cursor.execute("""SELECT id,ip,key_expiration,password,port,privateKey,publicKey,username FROM users WHERE id=?""", (id,))
 		user = self.cursor.fetchone()
 		return user
 
