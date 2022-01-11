@@ -13,6 +13,8 @@ import sqlite3
 from docopt import docopt
 from flask import Flask
 from flask import Response
+import requests,json
+
 
 
 APP = Flask(__name__)
@@ -40,20 +42,27 @@ class UserSrv:
 			return False
 		return True
 
-	# def returnKey(self,keyAsker,keyGiver):
+	def returnKey(self,keyAsker,keyGiver):
 		
-	# 	self.cursor.execute("""SELECT publicKey FROM users WHERE username = ? """,(keyGiver,))
-	# 	publicKeyGiver = self.cursor.fetchall()
-	# 	self.cursor.execute("""SELECT ip FROM users WHERE username = ? """,(keyAsker,))
-	# 	ipKeyAsker = self.cursor.fetchall()
-	# 	self.cursor.execute("""SELECT port FROM users WHERE username = ? """,(keyAsker,))
-	# 	portKeyAsker = self.cursor.fetchall()
-	# 	print(publicKeyGiver)
-	# 	url = "https://" + ipKeyAsker + "/" + portKeyAsker
-	# 	donnee = json.loads({public_key : publicKeyGiver})
-	# 	r = requests.post(url, data=donnee)
+		self.cursor.execute("""SELECT publicKey FROM users WHERE username = ? """,[keyGiver])
+		publicKeyGiver = self.cursor.fetchall()
+		self.cursor.execute("""SELECT ip FROM users WHERE username = ? """,[keyAsker])
+		ipKeyAsker = self.cursor.fetchall()
+		self.cursor.execute("""SELECT port FROM users WHERE username = ? """,[keyAsker])
+		portKeyAsker = self.cursor.fetchall()
+		url = "https://" + str(ipKeyAsker) + ":" + str(portKeyAsker)
+		translation_table = dict.fromkeys(map(ord, "[(',)]"), None)
+		url = url.translate(translation_table)
+		publicKeyGiver = str(publicKeyGiver).translate(translation_table)
+		donnee = json.dumps({"public_key" : publicKeyGiver})
+		return url,donnee
+		r = requests.post(url, data= donnee)
+		print('test')
 
-	# 	return True
+		# if r.status_code == requests.codes.ok :
+		# 	return True	
+		# else : 
+		# 	return False
 	
 	def hashed(self,password):
 		# return password
