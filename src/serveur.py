@@ -56,7 +56,6 @@ class UserSrv:
 	# 	return True
 	
 	def hashed(self,password):
-		# return password
 		return hash(password)
 
 	
