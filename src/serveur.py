@@ -15,6 +15,10 @@ from flask import Flask
 from flask import Response
 import requests,json
 
+import sys
+sys.path.append("/home/ei-se/Documents/coroMail/CoroMail-CAS/src")
+from Users import Users
+
 
 
 APP = Flask(__name__)
@@ -23,52 +27,33 @@ APP = Flask(__name__)
 def is_alive():
 	return Response(status=200)
 
-class UserSrv:
-
-	def __init__(self):
-		# self.users = []
-		try:
-			self.database = sqlite3.connect('database.db')
-		except sqlite3.error : 
-			print("Error open db.\n")
-		self.cursor = self.database.cursor()
-		self.cursor.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, 
-																ip TEXT,
-																key_expiration DATE, 
-																password TEXT, 
-																port int,
-																privateKey TEXT NOT NULL,
-																publicKey TEXT NOT NULL, 
-																username TEXT NOT NULL) """)
-
-	def addUser(self,ip,key_expiration,password,port,privateKey,publicKey,username):
-		if  key_expiration == "" or ip == "" or password == "" or privateKey == "" or publicKey == "" or username == "":
-			return False
-		self.cursor.execute("""INSERT INTO users(ip,key_expiration, password,port,privateKey,publicKey,username) VALUES(?,?,?,?,?,?,?)""",(ip,
-																																		   key_expiration,
-																																		   password, 
-																																		   port,
-																																		   privateKey, 
-																																		   publicKey, 
-																																		   username))	
-		if self.cursor.rowcount == 0:
-			return False
-		return True
+class UserSrv(Users):
+	def __init__(self,db):
+		super().__init__()
+		
+	
 
 	def returnKey(self,keyAsker,keyGiver):
 		
 		self.cursor.execute("""SELECT publicKey FROM users WHERE username = ? """,[keyGiver])
 		publicKeyGiver = self.cursor.fetchall()
+		
 		self.cursor.execute("""SELECT ip FROM users WHERE username = ? """,[keyAsker])
 		ipKeyAsker = self.cursor.fetchall()
+		
 		self.cursor.execute("""SELECT port FROM users WHERE username = ? """,[keyAsker])
 		portKeyAsker = self.cursor.fetchall()
+		
 		url = "https://" + str(ipKeyAsker) + ":" + str(portKeyAsker)
+
+
 		translation_table = dict.fromkeys(map(ord, "[(',)]"), None)
 		url = url.translate(translation_table)
 		publicKeyGiver = str(publicKeyGiver).translate(translation_table)
+		
 		donnee = json.dumps({"public_key" : publicKeyGiver})
 		return url,donnee
+		
 		r = requests.post(url, data= donnee)
 		print('test')
 
@@ -85,9 +70,27 @@ class UserSrv:
 		user = self.cursor.fetchone()
 		return user
 
+@app.route('/users_list',methods = ['POST', 'GET',])
+def device():
+
+    if request.method == 'POST':
+        self.addUser(request.json[0],request.json[1],request.json[2],request.json[3],request.json[4],request.json[5],request.json[6],request.json[7])
+        # id ip key_expiration password port privateKey publicKey username
+        return jsonify({'status': 'post ok'})
+
+    #GET 
+    elif request.method == 'GET':
+    	self.cursor.execute("""SELECT ip FROM users WHERE id=?""", (request.json[0],))
+		ip = self.cursor.fetchone()
+		return jsonify({'status': 'get ok','ip': ip})
+     
+
+
+
 if __name__ == '__main__':
-	ARGS = docopt(__doc__)
-	if ARGS['--port']:
-		APP.run(host='0.0.0.0', port=ARGS['--port'])
-	else:
-		logging.error("Wrong command line arguments")
+	app.run(debug=True,port=5001)
+	# ARGS = docopt(__doc__)
+	# if ARGS['--port']:
+	# 	APP.run(host='0.0.0.0', port=ARGS['--port'])
+	# else:
+	# 	logging.error("Wrong command line arguments")

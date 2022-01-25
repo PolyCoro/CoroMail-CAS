@@ -1,24 +1,43 @@
-"""USR
+"""USER
 """
 
 class User : 
 
-	def __init__(self, name, password, IP, publickey):
-	    self.Name = name
-	    self.__password = password
-	    self.__IP = IP
-	    self.__publickey = publickey
+	def __init__(self, ide, ip, key_expiration, password, port,privateKey, publickey, username):
+	    self.id = ide
+	    self.ip = ip
+	    self.key_expiration = key_expiration
+	    self.password = password
+	    self.port = port
+	    self.privateKey = privateKey
+	    self.publickey = publickey
+	    self.username = username
+
+	def getId(self) : 
+		return self.id
+
+	def getIp(self) :
+		return self.ip
+
+	def getKey_expiration(self) :
+		return self.key_expiration
 
 	def getPassword(self) :
-		return self.__password
+		return self.password
 
-	def getKey(self) :
-		return self.__publickey
+	def getPort(self) :
+		return self.port
 
-	def getIP(self) :
-		return self.__IP
+	def getPrivateKey(self) :
+		return self.privateKey
 
-if __name__ == '__main__':
-	usr = User("Pierre","password","127.0.0.2","abcde")
-	print(usr.getKey())
-	print(usr.getIP())
+	def getPublicKey(self) :
+		return self.publickey
+
+	def getUsername(self) :
+		return self.username
+
+	
+
+
+
