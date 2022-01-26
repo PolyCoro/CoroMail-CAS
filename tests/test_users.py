@@ -5,12 +5,9 @@ import subprocess
 import time
 import sqlite3
 import os
-#import src
-#from src.serveur import UserSrv
-import sys
-sys.path.append("/home/ei-se/Documents/coroMail/CoroMail-CAS/src")
-from serveur import UserSrv
-from Users import Users
+import src
+from src.serveur import UserSrv
+from src.Users import Users
 
 
 class TestUsers(unittest.TestCase):
