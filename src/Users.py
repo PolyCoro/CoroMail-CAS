@@ -12,7 +12,7 @@ class Users :
 
 	def __init__(self):
 		try:
-			self.db = sqlite3.connect('database.db')
+			self.db = sqlite3.connect('database.db',check_same_thread=False)
 		except sqlite3.error : 
 			print("Error open db.\n")
 		self.cursor = self.db.cursor()

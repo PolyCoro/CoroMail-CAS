@@ -1,0 +1,4 @@
+requests==2.26.0
+mysql==0.0.3
+flask==2.0.2
+docopt==0.6.2

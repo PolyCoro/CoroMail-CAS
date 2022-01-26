@@ -14,6 +14,8 @@ from docopt import docopt
 from flask import Flask
 from flask import Response
 import requests,json
+from flask import render_template, jsonify, request
+import requests
 
 import sys
 sys.path.append("/home/ei-se/Documents/coroMail/CoroMail-CAS/src")
@@ -30,6 +32,8 @@ def is_alive():
 class UserSrv(Users):
     def __init__(self,db):
         super().__init__()
+
+
         
     
 
@@ -72,23 +76,29 @@ class UserSrv(Users):
 
 @APP.route('/users_list',methods = ['POST', 'GET',])
 def device():
-
+    
     if request.method == 'POST':
-        self.addUser(request.json[0],request.json[1],request.json[2],request.json[3],request.json[4],request.json[5],request.json[6],request.json[7])
+        name = request.json
+        Serveur.addUser(name['id'],name['ip'],name['key_expiration'],name['password'],name['port'],name['privateKey'],name['publicKey'],name['username'])
         # id ip key_expiration password port privateKey publicKey username
+        Serveur.cursor.execute("SELECT * FROM users")
+        print(Serveur.cursor.fetchall())
         return jsonify({'status': 'post ok'})
 
     #GET 
     elif request.method == 'GET':
-        self.cursor.execute("""SELECT ip FROM users WHERE id=?""", (request.json[0],))
-        ip = self.cursor.fetchone()
-        return jsonify({'status': 'get ok','ip': ip})
+        args = request.args
+        name = args['username']
+        Serveur.cursor.execute("""SELECT ip FROM users WHERE username=?""", (name,))
+        ip = Serveur.cursor.fetchone()
+        return jsonify({'status': 'get ok'})
+        
          
 
-
-
 if __name__ == '__main__':
+    Serveur = UserSrv(Users())
     APP.run(debug=True,port=5001)
+
     # ARGS = docopt(__doc__)
     # if ARGS['--port']:
     #   APP.run(host='0.0.0.0', port=ARGS['--port'])
