@@ -6,15 +6,11 @@ import time
 import sqlite3
 import os
 #import src
-#from src.serveur import UserSrv
+from src.serveur import UserSrv
+from src.Users import Users
 import sys
 sys.path.append("/home/ei-se/Documents/coroMail/CoroMail-CAS/src")
-<<<<<<< HEAD
-from serveur import UserSrv
-from Users import Users
-=======
 from src.serveur import UserSrv
->>>>>>> f51ff354867e7ce530656573fafcabd2897fe801
 
 class TestUserSrv(unittest.TestCase):
 
