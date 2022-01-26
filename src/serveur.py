@@ -17,9 +17,7 @@ import requests,json
 from flask import render_template, jsonify, request
 import requests
 
-import sys
-sys.path.append("/home/ei-se/Documents/coroMail/CoroMail-CAS/src")
-from Users import Users
+from src.Users import Users
 
 
 

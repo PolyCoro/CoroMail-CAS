@@ -9,7 +9,6 @@ import os
 from src.serveur import UserSrv
 from src.Users import Users
 import sys
-sys.path.append("/home/ei-se/Documents/coroMail/CoroMail-CAS/src")
 from src.serveur import UserSrv
 
 class TestUserSrv(unittest.TestCase):
