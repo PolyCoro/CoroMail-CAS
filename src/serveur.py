@@ -89,7 +89,7 @@ def device():
         name = args['username']
         Serveur.cursor.execute("""SELECT ip FROM users WHERE username=?""", (name,))
         ip = Serveur.cursor.fetchone()
-        return jsonify({'status': 'get ok'})
+        return jsonify({'status': 'get ok','ip' : ip})
         
          
 
